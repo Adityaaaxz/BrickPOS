@@ -1,26 +1,616 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* LEGO Brand Palette */
+  --color-lego-red: #D1120D;
+  --color-lego-red-dark: #A00E0A;
+  --color-lego-red-light: #FF2A25;
+  --color-lego-yellow: #FFD500;
+  --color-lego-yellow-dark: #E6BF00;
+  --color-lego-yellow-light: #FFE44D;
+  --color-lego-blue: #0055BF;
+  --color-lego-blue-dark: #003F8F;
+  --color-lego-blue-light: #1A73E8;
+  --color-lego-green: #00852B;
+  --color-lego-green-light: #00A83A;
+  --color-lego-orange: #FF7E14;
+  --color-lego-black: #1B1B1B;
+  --color-lego-dark: #0D0D0D;
+  --color-lego-white: #F8F8F8;
+  --color-lego-gray: #A0A5A9;
+  --color-lego-gray-light: #E4E4E4;
+  --color-lego-purple: #8B4DBF;
+  --color-lego-teal: #00BCD4;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #0D0D0D;
+  --foreground: #F8F8F8;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, "Inter", system-ui, sans-serif);
+  overflow-x: hidden;
+}
+
+/* ============================================
+   LEGO STUD TEXTURE (repeating dot pattern)
+   ============================================ */
+
+.lego-stud-bg {
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.08) 8px, transparent 8px);
+  background-size: 32px 32px;
+  background-position: 16px 16px;
+}
+
+.lego-stud-bg-light {
+  background-image:
+    radial-gradient(circle, rgba(0,0,0,0.06) 6px, transparent 6px);
+  background-size: 28px 28px;
+  background-position: 14px 14px;
+}
+
+/* ============================================
+   BRICK CARD STYLING
+   ============================================ */
+
+.brick-card {
+  border: 2px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(145deg, #1a1a2e 0%, #16162a 100%);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-style: preserve-3d;
+}
+
+.brick-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #D1120D, #FFD500, #0055BF, #00852B);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.brick-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255,213,0,0.06), transparent 40%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.brick-card:hover {
+  border-color: rgba(255,213,0,0.25);
+  box-shadow:
+    0 24px 48px rgba(0,0,0,0.5),
+    0 0 40px rgba(255,213,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.brick-card:hover::before {
+  opacity: 1;
+}
+
+.brick-card:hover::after {
+  opacity: 1;
+}
+
+/* ============================================
+   LEGO STUD BUTTON
+   ============================================ */
+
+.lego-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 32px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lego-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.lego-btn:hover::after {
+  opacity: 1;
+}
+
+.lego-btn-red {
+  background: linear-gradient(180deg, #FF2A25 0%, #D1120D 60%, #A00E0A 100%);
+  color: white;
+  box-shadow:
+    0 4px 0 #8B0B08,
+    0 6px 20px rgba(209,18,13,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.lego-btn-red:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 7px 0 #8B0B08,
+    0 12px 35px rgba(209,18,13,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.lego-btn-red:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 #8B0B08,
+    0 3px 10px rgba(209,18,13,0.3);
+}
+
+.lego-btn-yellow {
+  background: linear-gradient(180deg, #FFE44D 0%, #FFD500 60%, #E6BF00 100%);
+  color: #1B1B1B;
+  box-shadow:
+    0 4px 0 #B89B00,
+    0 6px 20px rgba(255,213,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+.lego-btn-yellow:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 7px 0 #B89B00,
+    0 12px 35px rgba(255,213,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+.lego-btn-yellow:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 #B89B00,
+    0 3px 10px rgba(255,213,0,0.2);
+}
+
+.lego-btn-blue {
+  background: linear-gradient(180deg, #1A73E8 0%, #0055BF 60%, #003F8F 100%);
+  color: white;
+  box-shadow:
+    0 4px 0 #002D6B,
+    0 6px 20px rgba(0,85,191,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.lego-btn-blue:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 7px 0 #002D6B,
+    0 12px 35px rgba(0,85,191,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.lego-btn-blue:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 #002D6B,
+    0 3px 10px rgba(0,85,191,0.3);
+}
+
+/* ============================================
+   BRICK TEXTURE PATTERN (for section bgs)
+   ============================================ */
+
+.brick-wall-pattern {
+  background-color: #1a1a2e;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 30px;
+}
+
+/* ============================================
+   PRODUCT CARD THEME GRADIENTS
+   ============================================ */
+
+.product-theme-technic {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 50%, #1a1a2e 100%);
+}
+.product-theme-starwars {
+  background: linear-gradient(135deg, #1a1a2e 0%, #1b2d3e 50%, #1a1a2e 100%);
+}
+.product-theme-city {
+  background: linear-gradient(135deg, #1a1a2e 0%, #1b3e2d 50%, #1a1a2e 100%);
+}
+.product-theme-creator {
+  background: linear-gradient(135deg, #1a1a2e 0%, #3e2d1b 50%, #1a1a2e 100%);
+}
+.product-theme-harrypotter {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d1b3e 50%, #1a1a2e 100%);
+}
+.product-theme-architecture {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2e2e2e 50%, #1a1a2e 100%);
+}
+.product-theme-ninjago {
+  background: linear-gradient(135deg, #1a1a2e 0%, #3e1b1b 50%, #1a1a2e 100%);
+}
+.product-theme-friends {
+  background: linear-gradient(135deg, #1a1a2e 0%, #3e1b3e 50%, #1a1a2e 100%);
+}
+
+/* ============================================
+   GLOW EFFECTS
+   ============================================ */
+
+.glow-red   { filter: drop-shadow(0 0 24px rgba(209,18,13,0.6)); }
+.glow-yellow{ filter: drop-shadow(0 0 24px rgba(255,213,0,0.6)); }
+.glow-blue  { filter: drop-shadow(0 0 24px rgba(0,85,191,0.6)); }
+.glow-green { filter: drop-shadow(0 0 24px rgba(0,133,43,0.6)); }
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0D0D0D; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #D1120D, #FFD500);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #FF2A25, #FFE44D);
+}
+
+/* ============================================
+   PLAYGROUND AREA
+   ============================================ */
+
+.playground-grid {
+  background-image:
+    radial-gradient(circle, rgba(255,213,0,0.15) 4px, transparent 4px);
+  background-size: 40px 40px;
+}
+
+/* ============================================
+   SECTION DIVIDER (Lego brick strip)
+   ============================================ */
+
+.lego-divider {
+  height: 8px;
+  background: repeating-linear-gradient(
+    90deg,
+    #D1120D 0px,    #D1120D 60px,
+    #FFD500 60px,   #FFD500 120px,
+    #0055BF 120px,  #0055BF 180px,
+    #00852B 180px,  #00852B 240px
+  );
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-20px) rotate(3deg); }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(-2deg) scale(1); }
+  33%       { transform: translateY(-12px) rotate(2deg) scale(1.02); }
+  66%       { transform: translateY(-6px) rotate(-1deg) scale(0.98); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,213,0,0.3); }
+  50%       { box-shadow: 0 0 50px rgba(255,213,0,0.7), 0 0 80px rgba(255,213,0,0.3); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes neonPulse {
+  0%, 100% {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 40px currentColor;
+  }
+  50% {
+    text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+}
+
+@keyframes brickReveal {
+  0%   { clip-path: inset(0 100% 0 0); opacity: 0; }
+  100% { clip-path: inset(0 0% 0 0);   opacity: 1; }
+}
+
+@keyframes magneticFloat {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25%       { transform: translate(5px, -8px) rotate(1deg); }
+  50%       { transform: translate(-3px, -15px) rotate(-1deg); }
+  75%       { transform: translate(-6px, -6px) rotate(2deg); }
+}
+
+@keyframes particleBurst {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+@keyframes marqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes glitchX {
+  0%, 100% { clip-path: inset(0 0 95% 0); transform: translateX(0); }
+  20%       { clip-path: inset(8% 0 62% 0); transform: translateX(-4px); }
+  40%       { clip-path: inset(43% 0 40% 0); transform: translateX(4px); }
+  60%       { clip-path: inset(25% 0 58% 0); transform: translateX(-2px); }
+  80%       { clip-path: inset(72% 0 5% 0); transform: translateX(2px); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes orbitGlow {
+  0%   { transform: rotate(0deg) translateX(120px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+}
+
+@keyframes rotateSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+@keyframes confettiFall {
+  0%   { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ============================================
+   ANIMATION UTILITY CLASSES
+   ============================================ */
+
+.animate-float       { animation: float 6s ease-in-out infinite; }
+.animate-float-slow  { animation: floatSlow 8s ease-in-out infinite; }
+.animate-pulse-glow  { animation: pulse-glow 3s ease-in-out infinite; }
+.animate-neon-pulse  { animation: neonPulse 2s ease-in-out infinite; }
+.animate-marquee     { animation: marqueeScroll 30s linear infinite; }
+.animate-marquee-slow{ animation: marqueeScroll 50s linear infinite; }
+.animate-orbit-glow  { animation: orbitGlow 8s linear infinite; }
+.animate-rotate-slow { animation: rotateSlow 20s linear infinite; }
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #FFD500 0%,
+    #FFFFFF 25%,
+    #FFD500 50%,
+    #FFFFFF 75%,
+    #FFD500 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+.shimmer-text-red {
+  background: linear-gradient(
+    90deg,
+    #D1120D 0%,
+    #FF8080 30%,
+    #FFD500 50%,
+    #FF8080 70%,
+    #D1120D 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+/* Neon border glow */
+.neon-border-red {
+  box-shadow: 0 0 0 1px #D1120D, 0 0 20px rgba(209,18,13,0.4), 0 0 40px rgba(209,18,13,0.2);
+}
+.neon-border-yellow {
+  box-shadow: 0 0 0 1px #FFD500, 0 0 20px rgba(255,213,0,0.4), 0 0 40px rgba(255,213,0,0.2);
+}
+.neon-border-blue {
+  box-shadow: 0 0 0 1px #0055BF, 0 0 20px rgba(0,85,191,0.4), 0 0 40px rgba(0,85,191,0.2);
+}
+
+/* Spotlight / cursor glow card */
+.spotlight-card {
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255,213,0,0.05),
+    transparent 40%
+  );
+}
+
+/* Gradient radial utility */
+.bg-gradient-radial {
+  background-image: radial-gradient(var(--tw-gradient-stops));
+}
+
+/* Backdrop blur layers */
+.glass-panel {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.glass-panel-dark {
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Marquee container */
+.marquee-container {
+  overflow: hidden;
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+/* Scroll progress bar */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #D1120D, #FFD500, #0055BF);
+  z-index: 9999;
+  transform-origin: left;
+  transition: width 0.1s linear;
+}
+
+/* Image upload zone */
+.upload-zone {
+  border: 2px dashed rgba(255,213,0,0.3);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  background: rgba(255,213,0,0.02);
+}
+
+.upload-zone:hover,
+.upload-zone.drag-over {
+  border-color: rgba(255,213,0,0.6);
+  background: rgba(255,213,0,0.05);
+  box-shadow: 0 0 30px rgba(255,213,0,0.1);
+}
+
+/* Text selection color */
+::selection {
+  background: rgba(255,213,0,0.3);
+  color: white;
+}
+
+/* Focus ring override */
+:focus-visible {
+  outline: 2px solid #FFD500;
+  outline-offset: 2px;
+}
+
+/* Input styles for forms */
+.lego-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  color: white;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.lego-input:focus {
+  outline: none;
+  border-color: rgba(255,213,0,0.5);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 0 3px rgba(255,213,0,0.1);
+}
+
+.lego-input::placeholder {
+  color: rgba(255,255,255,0.3);
+}
+
+/* Confetti piece */
+.confetti-piece {
+  position: fixed;
+  top: -10px;
+  border-radius: 2px;
+  animation: confettiFall linear forwards;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* 3D perspective for card flips */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-only-invoice, .print-only-invoice * {
+    visibility: visible;
+  }
+  .print-only-invoice {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    background: white !important;
+    color: black !important;
+  }
 }

@@ -1,65 +1,62 @@
-import Image from "next/image";
+import { prisma } from "@/lib/db";
+import Header from "./components/Header";
+import HeroSection from "./components/HeroSection";
+import FeaturedProducts from "./components/FeaturedProducts";
+import InteractivePlayground from "./components/InteractivePlayground";
+import Benefits from "./components/Benefits";
+import MarqueeSection from "./components/MarqueeSection";
+import Newsletter from "./components/Newsletter";
+import Footer from "./components/Footer";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  let products = await prisma.product.findMany({
+    orderBy: { rating: "desc" },
+  });
+
+  if (products.length === 0) {
+    const DUMMY_PRODUCTS = [
+      { name: "Millennium Falcon", price: 159.99, category: "starwars", image: "starwars", stock: 12, pieces: 1351, ageRange: "9+", rating: 4.9 },
+      { name: "Hogwarts Castle", price: 169.99, category: "harrypotter", image: "harrypotter", stock: 8, pieces: 2660, ageRange: "16+", rating: 4.8 },
+      { name: "Porsche 911 GT3 RS", price: 299.99, category: "technic", image: "technic", stock: 5, pieces: 2704, ageRange: "16+", rating: 5.0 },
+      { name: "Statue of Liberty", price: 119.99, category: "architecture", image: "architecture", stock: 15, pieces: 1685, ageRange: "16+", rating: 4.7 },
+      { name: "Ninjago City Gardens", price: 299.99, category: "ninjago", image: "ninjago", stock: 3, pieces: 5685, ageRange: "14+", rating: 4.9 },
+      { name: "Police Station", price: 199.99, category: "city", image: "city", stock: 20, pieces: 2923, ageRange: "18+", rating: 4.8 },
+      { name: "Central Perk", price: 59.99, category: "friends", image: "friends", stock: 25, pieces: 1070, ageRange: "16+", rating: 4.9 },
+      { name: "Roller Coaster", price: 379.99, category: "creator", image: "creator", stock: 2, pieces: 4124, ageRange: "16+", rating: 4.8 },
+    ];
+    await prisma.product.createMany({ data: DUMMY_PRODUCTS });
+    products = await prisma.product.findMany({ orderBy: { rating: "desc" } });
+  } else if (products.length === 6) {
+    // If they have the old 6 dummy products, add the missing 2 so the grid looks full
+    const MORE_DUMMY = [
+      { name: "Central Perk", price: 59.99, category: "friends", image: "friends", stock: 25, pieces: 1070, ageRange: "16+", rating: 4.9 },
+      { name: "Roller Coaster", price: 379.99, category: "creator", image: "creator", stock: 2, pieces: 4124, ageRange: "16+", rating: 4.8 },
+    ];
+    for (const p of MORE_DUMMY) {
+      const exists = await prisma.product.findFirst({ where: { name: p.name } });
+      if (!exists) {
+        await prisma.product.create({ data: p });
+      }
+    }
+    products = await prisma.product.findMany({ orderBy: { rating: "desc" } });
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="flex-1">
+      <Header />
+      <HeroSection />
+      <div className="lego-divider" />
+      <FeaturedProducts products={products} />
+      <MarqueeSection />
+      <div className="lego-divider" />
+      <InteractivePlayground />
+      <div className="lego-divider" />
+      <Benefits />
+      <div className="lego-divider" />
+      <Newsletter />
+      <Footer />
+    </main>
   );
 }
